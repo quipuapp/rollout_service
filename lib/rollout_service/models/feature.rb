@@ -13,6 +13,7 @@ module RolloutService
       attribute :created_at, type: Date
       attribute :history, default: []
       attribute :users, default: []
+      attribute :groups, default: []
 
       validates :name,
                 :description,
@@ -37,7 +38,8 @@ module RolloutService
         feature_data.merge!({
           name: feature.name,
           percentage: feature.percentage,
-          users: feature.users
+          users: feature.users,
+          groups: feature.groups
         })
 
         feature_data.delete_if {|key, _| !self.method_defined?(key)}

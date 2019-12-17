@@ -13,13 +13,11 @@ module RolloutService
       attribute :created_at, type: Date
       attribute :history, default: []
       attribute :users, default: []
+      attribute :groups, default: []
 
       validates :name,
-                :description,
                 :percentage,
                 :created_at,
-                :author,
-                :author_mail,
                 presence: true
 
       def self.parse(name)
@@ -37,7 +35,8 @@ module RolloutService
         feature_data.merge!({
           name: feature.name,
           percentage: feature.percentage,
-          users: feature.users
+          users: feature.users,
+          groups: feature.groups
         })
 
         feature_data.delete_if {|key, _| !self.method_defined?(key)}
@@ -60,6 +59,22 @@ module RolloutService
         Config::rollout.activate_users(rollout.name ,users)
         rollout.users = users
         users
+      end
+
+      def self.set_groups_to_feature(rollout, groups)
+        return if groups.nil? || rollout.nil?
+        groups = groups.to_a
+
+        current_active_groups = rollout.groups
+        groups_to_remove = current_active_groups - groups
+        groups_to_remove.each do |group|
+          Config::rollout.deactivate_group(rollout.name ,group)
+        end
+        groups.each do |group|
+          Config::rollout.activate_group(rollout.name ,group)
+        end
+        rollout.groups = groups
+        groups
       end
 
       def save!

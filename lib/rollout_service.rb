@@ -23,5 +23,6 @@ module RolloutService
     end
 
     resource(:features) { mount API::Features }
+    resource(:groups) { mount API::Groups }
   end
 end

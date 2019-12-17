@@ -16,11 +16,8 @@ module RolloutService
       attribute :groups, default: []
 
       validates :name,
-                :description,
                 :percentage,
                 :created_at,
-                :author,
-                :author_mail,
                 presence: true
 
       def self.parse(name)
@@ -62,6 +59,22 @@ module RolloutService
         Config::rollout.activate_users(rollout.name ,users)
         rollout.users = users
         users
+      end
+
+      def self.set_groups_to_feature(rollout, groups)
+        return if groups.nil? || rollout.nil?
+        groups = groups.to_a
+
+        current_active_groups = rollout.groups
+        groups_to_remove = current_active_groups - groups
+        groups_to_remove.each do |group|
+          Config::rollout.deactivate_group(rollout.name ,group)
+        end
+        groups.each do |group|
+          Config::rollout.activate_group(rollout.name ,group)
+        end
+        rollout.groups = groups
+        groups
       end
 
       def save!

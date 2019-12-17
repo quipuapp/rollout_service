@@ -66,6 +66,7 @@ module RolloutService
           begin
             feature.save!
             Models::Feature.set_users_to_feature(feature, params[:users])
+            Models::Feature.set_groups_to_feature(feature, params[:groups])
             RestfulModels::Response.represent(
                 message: 'Feature created successfully!',
                 data: feature
@@ -99,6 +100,7 @@ module RolloutService
           begin
             feature.save!
             Models::Feature.set_users_to_feature(feature, params[:users])
+            Models::Feature.set_groups_to_feature(feature, params[:groups])
             RestfulModels::Response.represent(
                 message: 'Feature updated successfully!',
                 data: feature
